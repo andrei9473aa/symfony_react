@@ -1,7 +1,8 @@
 import React from 'react';
 import RepLogList from "./RepLogList";
-import RepLogCreator from './RepLogCreator';
 import PropTypes from 'prop-types';
+import RepLogCreator from './RepLogCreator';
+// import RepLogCreator from './RepLogCreatorControlledComponents';
 
 function calculateTotalWeightLifted(repLogs) {
 
@@ -21,17 +22,27 @@ export default function RepLogs(props) {
         highlightedRowId,
         onRowClick,
         repLogs,
-        onAddRepLog
+        onAddRepLog,
+        numberOfHearts,
+        onHeartChange
     } = props;
 
     let heart = '';
     if(withHeart) {
-        heart = <span>❤️</span>;
+        heart = <span>{'❤️'.repeat(numberOfHearts)}</span>;
     }
 
     return (
         <div className="col-md-7">
             <h2>Lift History! {heart}</h2>
+
+            <input
+                type="range"
+                value={numberOfHearts}
+                onChange={(e) => {
+                    onHeartChange(+e.target.value)
+                }}
+            />
 
             <table className="table table-striped">
                 <thead>
@@ -73,5 +84,7 @@ RepLogs.propTypes = {
     highlightedRowId: PropTypes.any,
     onRowClick: PropTypes.func.isRequired,
     onAddRepLog: PropTypes.func.isRequired,
-    repLogs: PropTypes.array.isRequired
+    onHeartChange: PropTypes.func.isRequired,
+    repLogs: PropTypes.array.isRequired,
+    numberOfHearts: PropTypes.number.isRequired
 };

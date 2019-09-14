@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import RepLogs from './RepLogs';
 import PropTypes from 'prop-types';
 import uuid from 'uuid/v4';
+import { getRepLogs, deleteRepLog } from "../api/rep_log_api";
 
 export default class RepLogApp extends Component {
 
@@ -10,17 +11,25 @@ export default class RepLogApp extends Component {
 
         this.state = {
             highlightedRowId: null,
-            repLogs: [
-                { id: uuid(), reps: 25, itemLabel: 'My Laptop', totalWeightLifted: 112.5 },
-                { id: uuid(), reps: 10, itemLabel: 'Big Fat Cat', totalWeightLifted: 180 },
-                { id: uuid(), reps: 4, itemLabel: 'Big Fat Cat', totalWeightLifted: 72 }
-            ],
-            numberOfHearts: 1
+            repLogs: [],
+            numberOfHearts: 1,
+            isLoaded: false
         };
 
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleAddRepLog = this.handleAddRepLog.bind(this);
         this.handleHeartChange = this.handleHeartChange.bind(this);
+        this.handleDeleteRepLog = this.handleDeleteRepLog.bind(this);
+    }
+
+    componentDidMount() {
+        getRepLogs()
+            .then((data) => {
+                this.setState({
+                    repLogs: data,
+                    isLoaded: true
+                });
+            });
     }
 
     handleRowClick(repLogId) {
@@ -49,6 +58,18 @@ export default class RepLogApp extends Component {
         });
     }
 
+    handleDeleteRepLog(id) {
+        deleteRepLog(id);
+
+        // remove the repo log without mutating state
+        // filter returns a new array
+        this.setState((prevState) => {
+            return {
+                repLogs: prevState.repLogs.filter(repLog => repLog.id !== id)
+            }
+        });
+    }
+
     render() {
 
         return <RepLogs
@@ -56,6 +77,7 @@ export default class RepLogApp extends Component {
             {...this.state}
             onRowClick={this.handleRowClick}
             onAddRepLog={this.handleAddRepLog}
+            onDeleteRepLog={this.handleDeleteRepLog}
             onHeartChange={this.handleHeartChange}
         />
     }

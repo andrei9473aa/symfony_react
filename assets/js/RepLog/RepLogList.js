@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export default function RepLogList(props) {
 
-    const {highlightedRowId, onRowClick, onDeleteRepLog, repLogs, isLoaded} = props;
+    const {highlightedRowId, onRowClick, onDeleteRepLog, repLogs, isLoaded, isSavingNewRepLog} = props;
 
     const handleDeleteClick = function (event, repLogId) {
         event.preventDefault();
@@ -28,6 +28,9 @@ export default function RepLogList(props) {
                 key={repLog.id}
                 className={ highlightedRowId === repLog.id ? 'info' : '' }
                 onClick={() => onRowClick(repLog.id) }
+                style={{
+                    opacity: repLog.isDeleting ? .3 : 1
+                }}
             >
                 <td>{repLog.itemLabel}</td>
                 <td>{repLog.reps}</td>
@@ -39,6 +42,17 @@ export default function RepLogList(props) {
                 </td>
             </tr>
         ))}
+        {isSavingNewRepLog && (
+            <tr>
+                <td
+                    colSpan="4"
+                    className="text-center"
+                    style={{
+                        opacity: .5
+                    }}
+                >Lifting to the database...</td>
+            </tr>
+        )}
         </tbody>
     );
 }
@@ -48,5 +62,6 @@ RepLogList.propTypes = {
     onRowClick: PropTypes.func.isRequired,
     onDeleteRepLog: PropTypes.func.isRequired,
     repLogs: PropTypes.array.isRequired,
-    isLoaded: PropTypes.bool.isRequired
+    isLoaded: PropTypes.bool.isRequired,
+    isSavingNewRepLog: PropTypes.bool.isRequired
 };
